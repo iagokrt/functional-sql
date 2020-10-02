@@ -96,7 +96,6 @@ class Query {
         return this.andWhereFns.every(fn => fn(row));
       });
     }
-
     if (this.groupByFns && this.groupByFns.length) {
       executeData = groupBy(executeData, this.groupByFns.slice());
     }
@@ -111,7 +110,6 @@ class Query {
     if (typeof this.orderByFn === 'function') {
       executeData = executeData.sort(this.orderByFn);
     }
-
     return executeData;
   }
 }
