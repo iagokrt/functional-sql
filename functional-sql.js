@@ -5,7 +5,7 @@ function groupBy(executeData, groupByFns) {
   const groupByFn = groupByFns.shift();
   const grouped = executeData.reduce((grouped, item) => {
     const key = groupByFn(item);
-    grouped[key] = grouped[key] // [];
+    grouped[key] = grouped[key] || [];
     grouped[key].push(item);
     return grouped;
   }, {});

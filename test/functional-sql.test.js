@@ -68,7 +68,6 @@ describe("SQL tests", function() {
           
   });
   
-      
   it('GROUP BY tests', function() {
 
     var persons = [
