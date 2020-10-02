@@ -23,6 +23,8 @@ function groupBy(executeData, groupByFns) {
 class Query {
   constructor() {
     this.data = [];
+    this.havingFns = [];
+
   }
   
   select(fn) {
@@ -33,8 +35,8 @@ class Query {
     this.data = data;
     return this; 
   }
-  where(fn) {
-    this.whereFn = fn;
+  where(...fns) {
+    this.whereFns = fns;
     return this;
   }
   groupBy(...fns) {
@@ -46,17 +48,24 @@ class Query {
     return this;
   }
   having(fn) {
-    this.havingFn = fn;
+    this.havingFns.push(fn);
     return this;
   }
 
   execute() {
     let executeData = this.data.slice();
-    if (typeof this.whereFn === 'function') {
-      executeData = executeData.filter(this.whereFn);
+    if (this.whereFns && this.whereFns.length) {
+      executeData = executeData.filter(row => {
+        return this.whereFns.some(fn => fn(row));
+      });
     }
     if (this.groupByFns && this.groupByFns.length) {
       executeData = groupBy(executeData, this.groupByFns.slice());
+    }
+    if (this.havingFns && this.havingFns.length) {
+      this.havingFns.forEach(fn => {
+        executeData = executeData.filter(fn);
+      });
     }
     if (typeof this.selectFn === 'function') {
       executeData = executeData.map(this.selectFn);
@@ -64,9 +73,8 @@ class Query {
     if (typeof this.orderByFn === 'function') {
       executeData = executeData.sort(this.orderByFn);
     }
-    if (typeof this.havingFn === 'function') {
-      executeData = executeData.filter(this.havingFn);
-    }
+    
+
     return executeData;
   }
 }
