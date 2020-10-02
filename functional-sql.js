@@ -3,8 +3,10 @@ function groupBy(executeData, groupByFns) {
     return executeData;
   }
   const groupByFn = groupByFns.shift();
+  const groupTypes = {};
   const grouped = executeData.reduce((grouped, item) => {
     const key = groupByFn(item);
+    groupTypes[key] = typeof key;
     grouped[key] = grouped[key] || [];
     grouped[key].push(item);
     return grouped;
@@ -57,4 +59,6 @@ var query = function() {
 
 };
 
-module.exports = query;
+module.exports = function query() {
+  return new Query();
+};
