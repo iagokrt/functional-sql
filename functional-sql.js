@@ -12,6 +12,10 @@ function groupBy(executeData, groupByFns) {
     return grouped;
   }, {});
   return Object.entries(grouped).map(([groupName, values]) => {
+    if (groupTypes[groupName] === 'number') {
+      groupName = Number(groupName);
+    }
+    
     return [ groupName, groupBy(values, groupByFns.slice()) ];
   });
 }
@@ -37,6 +41,14 @@ class Query {
     this.groupByFns = fns;
     return this;
   }
+  orderBy(fn) {
+    this.orderByFn = fn;
+    return this;
+  }
+  having(fn) {
+    this.havingFn = fn;
+    return this;
+  }
 
   execute() {
     let executeData = this.data.slice();
@@ -49,15 +61,15 @@ class Query {
     if (typeof this.selectFn === 'function') {
       executeData = executeData.map(this.selectFn);
     }
+    if (typeof this.orderByFn === 'function') {
+      executeData = executeData.sort(this.orderByFn);
+    }
+    if (typeof this.havingFn === 'function') {
+      executeData = executeData.filter(this.havingFn);
+    }
     return executeData;
   }
 }
-
-var query = function() {
-  // select propertie: within instance
-  return new Query();
-
-};
 
 module.exports = function query() {
   return new Query();
